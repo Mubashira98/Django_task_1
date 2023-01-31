@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator
 from django.db import models
 
 from home.valiidators import validate_file_size
@@ -32,18 +33,25 @@ class Admin(models.Model):
     name = models.CharField(max_length=200)
     date_of_birth = models.DateField()
     phone = models.IntegerField()
-    photo = models.ImageField(upload_to='image', default=0)
+    # photo = models.ImageField(upload_to='image', default=0)
 
     def __str__(self):
         return self.name
 
 class Marks(models.Model):
     name = models.ForeignKey(Student,on_delete=models.DO_NOTHING)
-    english = models.IntegerField()
-    maths = models.IntegerField()
-    hindi = models.IntegerField()
-    science = models.IntegerField()
-    malayalam = models.IntegerField()
+    english = models.IntegerField(validators=[MaxValueValidator(100)])
+    maths = models.IntegerField(validators=[MaxValueValidator(100)])
+    hindi = models.IntegerField(validators=[MaxValueValidator(100)]
+                                )
+    science = models.IntegerField(validators=[MaxValueValidator(100)])
+    malayalam = models.IntegerField(validators=[MaxValueValidator(100)])
+
+    total = models.IntegerField(default= 0)
 
     def __str__(self):
-        return self.name
+        return self.name + self.total
+
+    def total(self):
+        self.total = self.english + self.maths + self.hindi + self.science + self.malayalam
+        return self.total
